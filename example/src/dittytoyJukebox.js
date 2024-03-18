@@ -1,4 +1,4 @@
-import {Dittytoy} from '../../dist';
+import {Dittytoy} from 'dittytoy';
 
 export default class DittytoyJukebox {
   constructor() {

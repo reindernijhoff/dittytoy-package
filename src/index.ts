@@ -1,2 +1,2 @@
-export {default as Dittytoy} from "./lib/dittytoy.js";
+export * from "./lib/dittytoy.js";
 
