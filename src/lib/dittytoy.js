@@ -48,7 +48,7 @@ class EventDispatcher {
     }
 }
 
-class Dittytoy extends EventDispatcher {
+export class Dittytoy extends EventDispatcher {
     constructor() {
         super();
 
@@ -317,5 +317,3 @@ class Dittytoy extends EventDispatcher {
         this.dispatch(MSG_PLAY);
     }
 }
-
-export default Dittytoy;

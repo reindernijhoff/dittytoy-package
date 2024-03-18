@@ -15,6 +15,6 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "dittytoy": "^0.0.2-alpha.0"
+    "dittytoy": "0.0.1-dev.c1dd5bf"
   }
 }
