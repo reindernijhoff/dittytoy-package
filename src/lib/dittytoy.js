@@ -1,7 +1,7 @@
 "use strict";
 
-const workerCode = (await import('./ditty-worker.js?raw')).default;
-const workletCode = (await import('./ditty-worklet.js?raw')).default;
+import workerCode from './ditty-worker.txt?raw';
+import workletCodeURL from './ditty-worklet.js?url';
 
 export const LOOP_OPERATOR_SYNTH = 0;
 export const LOOP_OPERATOR_OPTION = 1;
@@ -280,8 +280,7 @@ export class Dittytoy extends EventDispatcher {
             this._source.buffer = this._context.createBuffer(2, sampleRate, sampleRate);
             this._source.loop = true;
 
-            const blob = new Blob( [ workletCode ], { type: "application/javascript" } );
-            await this._context.audioWorklet.addModule(URL.createObjectURL(blob));
+            await this._context.audioWorklet.addModule(workletCodeURL);
             this._worklet = new AudioWorkletNode(this._context, `ditty-worklet`, {
                 numberOfInputs: 1,
                 numberOfOutputs: 1,

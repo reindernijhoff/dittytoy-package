@@ -3,9 +3,10 @@ import {resolve} from 'path'
 
 export default defineConfig({
     build: {
+        assetsInlineLimit: 409600,
         target: 'esnext',
         lib: {
-            formats: ['es'],
+            assetsInlineLimit: 409600,
             name: "dittytoy",
             entry: resolve(__dirname, 'src/index.js'),
         }

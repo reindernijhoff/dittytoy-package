@@ -13,10 +13,12 @@
     "dist/**/*",
     "README.md"
   ],
+  "main": "./dist/dittytoy.umd.cjs",
   "module": "./dist/dittytoy.js",
   "exports": {
     ".": {
-      "import": "./dist/dittytoy.js"
+      "import": "./dist/dittytoy.js",
+      "require": "./dist/dittytoy.umd.cjs"
     }
   },
   "publishConfig": {
