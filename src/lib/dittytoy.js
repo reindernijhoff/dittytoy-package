@@ -1,5 +1,8 @@
 "use strict";
 
+const workerCode = import('./ditty-worker.js?raw');
+const workletCode = import('./ditty-worklet.js?raw');
+
 export const LOOP_OPERATOR_SYNTH = 0;
 export const LOOP_OPERATOR_OPTION = 1;
 
@@ -152,7 +155,8 @@ export class Dittytoy extends EventDispatcher {
             const workerData = {...data};
 
             // create a worker for each loop
-            const worker = new Worker(new URL(`./ditty-worker.js`, import.meta.url));
+            const blob = new Blob( [ workerCode ], { type: "application/javascript" } );
+            const worker = new Worker(URL.createObjectURL(blob));
 
             worker.addEventListener('error', (e) => {
                 this.error(e.message, this.formatErrorCode(e));
@@ -226,7 +230,8 @@ export class Dittytoy extends EventDispatcher {
         this.logClear().log('Analyze code...', 0);
 
         return new Promise((resolve, reject) => {
-            const worker = new Worker(new URL(`./ditty-worker.js`, import.meta.url));
+            const blob = new Blob( [ workerCode ], { type: "application/javascript" } );
+            const worker = new Worker(URL.createObjectURL(blob));
 
             worker.addEventListener('error', (e) => { // error while compiling code
                 this.error(e.message, this.formatErrorCode(e));
@@ -275,7 +280,8 @@ export class Dittytoy extends EventDispatcher {
             this._source.buffer = this._context.createBuffer(2, sampleRate, sampleRate);
             this._source.loop = true;
 
-            await this._context.audioWorklet.addModule(new URL(`./ditty-worklet.js`, import.meta.url));
+            const blob = new Blob( [ workletCode ], { type: "application/javascript" } );
+            await this._context.audioWorklet.addModule(URL.createObjectURL(blob));
             this._worklet = new AudioWorkletNode(this._context, `ditty-worklet`, {
                 numberOfInputs: 1,
                 numberOfOutputs: 1,
