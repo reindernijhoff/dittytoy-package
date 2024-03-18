@@ -22,7 +22,6 @@
     "build": "npm run clean && npm run build:copy",
     "build:copy": "shx mkdir dist && shx cp -r src/* dist/",
     "clean": "shx rm -rf dist node_modules/.cache/.tsbuildinfo",
-    "typecheck": "tsc --project tsconfig.json --noEmit --noUnusedLocals",
     "prepare-publish": "tsx ./scripts/preparePublish.ts"
   },
   "devDependencies": {
