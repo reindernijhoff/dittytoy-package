@@ -1,7 +1,7 @@
 "use strict";
 
-const workerCode = import('./ditty-worker.js?raw');
-const workletCode = import('./ditty-worklet.js?raw');
+const workerCode = (await import('./ditty-worker.js?raw')).default;
+const workletCode = (await import('./ditty-worklet.js?raw')).default;
 
 export const LOOP_OPERATOR_SYNTH = 0;
 export const LOOP_OPERATOR_OPTION = 1;

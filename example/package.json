@@ -1,5 +1,5 @@
 {
-  "name": "vanilla",
+  "name": "dittytoyjukebox",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -15,6 +15,6 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "dittytoy": "0.0.2-dev.cca9353"
+    "dittytoy": "0.0.2-dev.8c8ee71"
   }
 }
