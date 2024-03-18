@@ -18,9 +18,8 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "npm run build:copy -- --watch",
-    "build": "npm run clean && npm run build:copy",
-    "build:copy": "shx mkdir dist && shx cp -r src/* dist/",
+    "dev": "vite",
+    "build": "vite build",
     "clean": "shx rm -rf dist node_modules/.cache/.tsbuildinfo",
     "prepare-publish": "tsx ./scripts/preparePublish.ts"
   },
@@ -29,7 +28,8 @@
     "shelljs": "^0.8.5",
     "shx": "^0.3.4",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.2",
+    "vite": "^5.1.6"
   },
   "engines": {
     "node": ">=20.0.0"
