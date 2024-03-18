@@ -8,12 +8,19 @@
   "repository": "git@github.com:reindernijhoff/dittytoy-package.git",
   "author": "Reinder Nijhoff <reinder@infi.nl>",
   "license": "MIT",
-  "exports": "./dist/index.js",
   "type": "module",
   "files": [
     "dist/**/*",
     "README.md"
   ],
+  "main": "./dist/dittytoy.umd.cjs",
+  "module": "./dist/dittytoy.js",
+  "exports": {
+    ".": {
+      "import": "./dist/dittytoy.js",
+      "require": "./dist/dittytoy.umd.cjs"
+    }
+  },
   "publishConfig": {
     "access": "public"
   },
