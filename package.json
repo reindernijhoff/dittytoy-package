@@ -8,25 +8,24 @@
   "repository": "git@github.com:reindernijhoff/dittytoy-package.git",
   "author": "Reinder Nijhoff <reinder@infi.nl>",
   "license": "MIT",
-  "type": "module",
   "files": [
     "dist/**/*",
     "README.md"
   ],
-  "main": "./dist/dittytoy.umd.cjs",
-  "module": "./dist/dittytoy.js",
-  "exports": {
-    ".": {
-      "import": "./dist/dittytoy.js",
-      "require": "./dist/dittytoy.umd.cjs"
-    }
-  },
   "publishConfig": {
     "access": "public"
   },
+  "type": "module",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "npm run build:copy -- --watch",
+    "build": "npm run clean && npm run build:copy",
+    "build:copy": "shx mkdir dist && shx cp -r src/* dist/",
     "clean": "shx rm -rf dist node_modules/.cache/.tsbuildinfo",
     "prepare-publish": "tsx ./scripts/preparePublish.ts"
   },
@@ -35,8 +34,7 @@
     "shelljs": "^0.8.5",
     "shx": "^0.3.4",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.2",
-    "vite": "^5.1.6"
+    "typescript": "^5.4.2"
   },
   "engines": {
     "node": ">=20.0.0"
