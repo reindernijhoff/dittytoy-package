@@ -1,0 +1,38 @@
+{
+  "name": "dittytoy",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [
+    "dittytoy"
+  ],
+  "repository": "git@github.com:reindernijhoff/dittytoy-package.git",
+  "author": "Reinder Nijhoff <reinder@infi.nl>",
+  "license": "MIT",
+  "exports": "./dist/index.js",
+  "type": "module",
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "npm run build:copy -- --watch",
+    "build": "npm run clean && npm run build:copy",
+    "build:copy": "shx mkdir dist && shx cp -r src/* dist/",
+    "clean": "shx rm -rf dist node_modules/.cache/.tsbuildinfo",
+    "typecheck": "tsc --project tsconfig.json --noEmit --noUnusedLocals",
+    "prepare-publish": "tsx ./scripts/preparePublish.ts"
+  },
+  "devDependencies": {
+    "@types/shelljs": "^0.8.15",
+    "shelljs": "^0.8.5",
+    "shx": "^0.3.4",
+    "tsx": "^4.6.2",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
