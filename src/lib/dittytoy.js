@@ -1,6 +1,6 @@
 "use strict";
 
-import workerCode from './ditty-worker.txt?raw';
+import workerCode from './ditty-worker.js?raw';
 import workletCodeURL from './ditty-worklet.js?url';
 
 export const LOOP_OPERATOR_SYNTH = 0;
