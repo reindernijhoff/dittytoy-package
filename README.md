@@ -1,12 +1,10 @@
 # Dittytoy
 
 The dittytoy package is a powerful package that allows you to compile and play ditties
-from [Dittytoy.net](https://dittytoy.net).
+from [Dittytoy.net](https://dittytoy.net), an online platform that allows you to create generative music using a
+minimalistic javascript API.
 
-[Dittytoy.net](https://dittytoy.net) is an online platform that allows you to create generative music using a
-minimalistic javascript API using Web Audio.
-
-The API syntax is loosely based on the syntax of [Sonic Pi](https://sonic-pi.net/tutorial.html). You can find the
+The API syntax of Dittytoy is loosely based on the syntax of [Sonic Pi](https://sonic-pi.net/tutorial.html). You can find the
 full [Dittytoy API Reference here](https://dittytoy.net/syntax).
 
 ## Getting started
@@ -52,6 +50,17 @@ loop( () => {
 
 Note: most browsers only allow audio to be played after a user interaction. You should use the `play` method to start the
 audio after a user interaction.
+
+### Controlling playback
+
+You can control the playback of the ditty using the following methods:
+
+```ts
+dittytoy.play(); // start playing
+dittytoy.pause(); // pause playing
+dittytoy.stop(); // stop playing
+dittytoy.resume(); // resume playing
+```
 
 ### Events
 
