@@ -23,6 +23,15 @@ h1 {
     line-height: 1.1;
 }
 
+#visualiser {
+    inset: 0;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    z-index: -1;
+}
+
 #app {
     display: flex;
     flex-direction: column;
@@ -31,15 +40,22 @@ h1 {
     margin: 0.5rem;
     border-radius: 0.5rem;
     overflow: hidden;
-    background-color: white;
     min-width: 640px;
     user-select: none;
 }
+
 
 ul {
     overflow-x: hidden;
     overflow-y: auto;
     width: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    background-color: white;
+}
+
+ul:hover {
+    opacity: 1;
 }
 
 li {
@@ -64,7 +80,6 @@ li:hover {
     flex-direction: column;
     padding: 1em;
     background-color: lightblue;
-    margin-bottom: 1em;
 }
 
 .controls {

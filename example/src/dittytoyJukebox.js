@@ -1,4 +1,5 @@
 import {Dittytoy, MSG_INIT, MSG_NOTE_PLAYED, MSG_UPDATE, RUN_AS_WORKER} from 'dittytoy';
+import DittytoyVisualiser from "./dittytoyVisualiser.js";
 
 function $(id) {
     return document.getElementById(id);
@@ -7,11 +8,12 @@ function $(id) {
 export default class DittytoyJukebox {
     constructor() {
         this.dittytoy = new Dittytoy();
+        this.visualizer = new DittytoyVisualiser(this.dittytoy);
         this.ditty = null;
         this.paused = 2;
 
         this.fetchDitties();
-        this.fetchDitty('13d7ee15e5');
+        this.fetchDitty('24373308b4');
 
         $('play-button').addEventListener('click', async () => {
             if (this.paused === 0) {
