@@ -38,7 +38,7 @@ export default class DittytoyJukebox {
             if (state) $('log2').innerText = `▸ tick: ${(state.tick || 0).toFixed(3)}, time: ${(state.time || 0).toFixed(3)} (${state.bpm.toFixed(0)} bpm)`;
         });
         this.dittytoy.addListener(MSG_NOTE_PLAYED, (data) => {
-            $('log3').innerText = `♪ tick: ${data.tick.toFixed(2)}, note: ${data.note.toFixed(2)} (${data.loop}.${data.synth})`;
+            $('log3').innerText = `♪ tick: ${data.tick.toFixed(3)}, note: ${data.note.toFixed(2)} (${data.loop}.${data.synth})`;
         });
     }
 
@@ -58,7 +58,7 @@ export default class DittytoyJukebox {
 
         this.ditty = await fetch(`https://dittytoy.net/api/v1/ditty/${id}/`).then(e => e.json()).then(ditty => {
             $('song-name').innerHTML = `<a href="https://dittytoy.net/ditty/${ditty.object_id}" target="_blank">${ditty.title}</a>`;
-            $('artist-name').innerHTML = `By ${ditty.user_id}`;
+            $('artist-name').innerHTML = `By <a href="https://dittytoy.net/user/${ditty.user_id}" target="_blank">${ditty.user_id}</a>`;
             return ditty;
         });
 

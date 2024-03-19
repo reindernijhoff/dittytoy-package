@@ -3,7 +3,14 @@
   "version": "0.1.2",
   "description": "",
   "keywords": [
-    "dittytoy"
+    "Dittytoy",
+    "music",
+    "generative",
+    "DSP",
+    "audio",
+    "Sonic Pi",
+    "javascript",
+    "Web Audio API"
   ],
   "repository": "git@github.com:reindernijhoff/dittytoy-package.git",
   "author": "Reinder Nijhoff <reinder@infi.nl>",
