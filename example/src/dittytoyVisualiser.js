@@ -35,10 +35,10 @@ export default class DittytoyVisualiser {
         this.initialized = false;
 
         this.loops = {};
-        this.bmp = 0;
+        this.bpm = 0;
         this.tick = 0;
         this.sampleRate = 0;
-        this.volume = 0;
+        this.volume = 1;
 
         this.canvas = document.getElementById('visualiser');
         this.ctx = this.canvas.getContext('2d');
@@ -47,7 +47,7 @@ export default class DittytoyVisualiser {
             // ditty is compiled and ready to play
 
             this.loops = {};
-            this.bmp = structure.bpm;
+            this.bpm = structure.bpm;
             this.sampleRate = structure.sampleRate;
             this.tick = 0;
 
@@ -57,7 +57,7 @@ export default class DittytoyVisualiser {
                 this.loops[loop.name] = {
                     color: `hsl(${60 + i * 240 / structure.loops.length}, 75%, 75%)`,
                     notes: [],
-                    volume: 0,
+                    volume: 1,
                     rotSpeed: lerp(0.05, 0.2, Math.random()) * (Math.random() > 0.5 ? 1 : -1),
                     a: goldenAngle * i,
                     speedVariation: lerp(0.5, 1, Math.random()),
@@ -79,12 +79,12 @@ export default class DittytoyVisualiser {
         this.dittytoy.addListener(MSG_UPDATE, (data) => {
             if (data.amp) {
                 if (data.amp.master) {
-                    this.volume = lerp(this.volume, Math.sqrt(data.amp.master.volume), .1);
+                    this.volume = lerp(this.volume, Math.sqrt(data.amp.master.volume), .01);
                 }
                 if (data.amp.loops) {
                     data.amp.loops.forEach(loop => {
                         if (this.loops[loop.name]) {
-                            this.loops[loop.name].volume = lerp(this.loops[loop.name].volume, Math.sqrt(loop.volume), .1);
+                            this.loops[loop.name].volume = lerp(this.loops[loop.name].volume, Math.sqrt(loop.volume), .01);
                         }
                     });
                 }
@@ -133,7 +133,7 @@ export default class DittytoyVisualiser {
         ctx.strokeStyle = loop.color;
 
         loop.notes.forEach(note => {
-            ctx.globalAlpha = note.volume;
+            ctx.globalAlpha = 0.05 + note.volume;
             const end = Math.max(0.0001, (this.tick - note.tick)) * speedModifier;
             const start = Math.max(0.0001, (this.tick - note.tick - note.duration / 2)) * speedModifier;
 
