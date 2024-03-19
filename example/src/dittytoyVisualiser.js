@@ -38,7 +38,7 @@ export default class DittytoyVisualiser {
         this.bpm = 0;
         this.tick = 0;
         this.sampleRate = 0;
-        this.volume = 1;
+        this.volume = 0.1;
 
         this.canvas = document.getElementById('visualiser');
         this.ctx = this.canvas.getContext('2d');
@@ -57,7 +57,7 @@ export default class DittytoyVisualiser {
                 this.loops[loop.name] = {
                     color: `hsl(${60 + i * 240 / structure.loops.length}, 75%, 75%)`,
                     notes: [],
-                    volume: 1,
+                    volume: 0.1,
                     rotSpeed: lerp(0.05, 0.2, Math.random()) * (Math.random() > 0.5 ? 1 : -1),
                     a: goldenAngle * i,
                     speedVariation: lerp(0.5, 1, Math.random()),
