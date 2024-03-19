@@ -95,7 +95,9 @@ export default class DittytoyVisualiser {
         });
 
         this.dittytoy.addListener(MSG_NOTE_PLAYED, data => {
-            this.loops[data.loop].notes.push({...data, volume: this.loops[data.loop].volume ** 1.5});
+            const loop = this.loops[data.loop];
+            const angle = loop.a + step(this.tick) * loop.rotSpeed * 0.1 + data.note / 64 * Math.PI * 2;
+            loop.notes.push({...data, volume: loop.volume ** 1.5, angle});
         });
     }
 
@@ -121,12 +123,12 @@ export default class DittytoyVisualiser {
 
         this.drawInnerCircle(t, height);
 
-        Object.values(this.loops).forEach(loop => loop.notes = this.drawLines(t, loop, height));
+        Object.values(this.loops).forEach(loop => loop.notes = this.drawLines(t, loop, aspect));
 
         this.drawAnalyser(t);
     }
 
-    drawLines(t, loop, height) {
+    drawLines(t, loop, aspectRatio) {
         const filteredNotes = [];
         const speedModifier = 0.1 * loop.speedVariation;
         const ctx = this.ctx;
@@ -139,12 +141,12 @@ export default class DittytoyVisualiser {
 
             const r0 = innerCircleRadius * 2 + 2 * (end ** 0.9);
             const r1 = innerCircleRadius * 2 + 2 * (start ** 0.9);
-            const a = loop.a + step(this.tick) * loop.rotSpeed * 0.1 + note.note / 64 * Math.PI * 2
+            const a = note.angle; // loop.a + step(this.tick) * loop.rotSpeed * 0.1 + note.note / 64 * Math.PI * 2;
 
             ctx.beginPath();
             ctx.moveTo(...t(r0 * Math.sin(a), r0 * Math.cos(a)));
             ctx.lineTo(...t(r1 * Math.sin(a), r1 * Math.cos(a)));
-            if (r1 < 2) {
+            if (r1 < Math.max(1, aspectRatio)) {
                 filteredNotes.push(note);
             }
 
