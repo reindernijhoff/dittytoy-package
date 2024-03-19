@@ -1,4 +1,4 @@
-import {MSG_INIT, MSG_UPDATE, MSG_WORKLET_READY} from "dittytoy";
+import {MSG_INIT, MSG_NOTE_PLAYED, MSG_UPDATE, MSG_WORKLET_READY} from "dittytoy";
 
 const innerCircleRadius = 0.15;
 
@@ -51,11 +51,16 @@ export default class DittytoyVisualiser {
             this.sampleRate = structure.sampleRate;
             this.tick = 0;
 
-            structure.loops.forEach(loop => {
+            const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+
+            structure.loops.forEach((loop, i) => {
                 this.loops[loop.name] = {
-                    color: 'white',
-                    lines: [],
+                    color: `hsl(${60 + i * 240 / structure.loops.length}, 75%, 75%)`,
+                    notes: [],
                     volume: 0,
+                    rotSpeed: lerp(0.05, 0.2, Math.random()) * (Math.random() > 0.5 ? 1 : -1),
+                    a: goldenAngle * i,
+                    speedVariation: lerp(0.5, 1, Math.random()),
                 };
             });
         });
@@ -73,11 +78,24 @@ export default class DittytoyVisualiser {
 
         this.dittytoy.addListener(MSG_UPDATE, (data) => {
             if (data.amp) {
-                this.volume = lerp(this.volume, Math.sqrt(data.amp.master.volume), .1);
+                if (data.amp.master) {
+                    this.volume = lerp(this.volume, Math.sqrt(data.amp.master.volume), .1);
+                }
+                if (data.amp.loops) {
+                    data.amp.loops.forEach(loop => {
+                        if (this.loops[loop.name]) {
+                            this.loops[loop.name].volume = lerp(this.loops[loop.name].volume, Math.sqrt(loop.volume), .1);
+                        }
+                    });
+                }
             }
             if (data.state) {
                 this.tick = data.state.tick;
             }
+        });
+
+        this.dittytoy.addListener(MSG_NOTE_PLAYED, data => {
+            this.loops[data.loop].notes.push({...data, volume: this.loops[data.loop].volume ** 1.5});
         });
     }
 
@@ -87,9 +105,9 @@ export default class DittytoyVisualiser {
         const ctx = this.ctx;
         const {width, height} = canvas.getBoundingClientRect();
 
-        if (canvas.width !== width || canvas.height !== height) {
-            canvas.width = width;
-            canvas.height = height;
+        if (canvas.width !== width | 0 || canvas.height !== height | 0) {
+            canvas.width = width | 0;
+            canvas.height = height | 0;
         }
 
         ctx.lineWidth = height / 300;
@@ -102,27 +120,59 @@ export default class DittytoyVisualiser {
         const t = (x, y) => [(x * .5 + .5 * aspect) * height, (y * .5 + .5) * height];
 
         this.drawInnerCircle(t, height);
+
+        Object.values(this.loops).forEach(loop => loop.notes = this.drawLines(t, loop, height));
+
         this.drawAnalyser(t);
+    }
+
+    drawLines(t, loop, height) {
+        const filteredNotes = [];
+        const speedModifier = 0.1 * loop.speedVariation;
+        const ctx = this.ctx;
+        ctx.strokeStyle = loop.color;
+
+        loop.notes.forEach(note => {
+            ctx.globalAlpha = note.volume;
+            const end = Math.max(0.0001, (this.tick - note.tick)) * speedModifier;
+            const start = Math.max(0.0001, (this.tick - note.tick - note.duration / 2)) * speedModifier;
+
+            const r0 = innerCircleRadius * 2 + 2 * (end ** 0.9);
+            const r1 = innerCircleRadius * 2 + 2 * (start ** 0.9);
+            const a = loop.a + step(this.tick) * loop.rotSpeed * 0.1 + note.note / 64 * Math.PI * 2
+
+            ctx.beginPath();
+            ctx.moveTo(...t(r0 * Math.sin(a), r0 * Math.cos(a)));
+            ctx.lineTo(...t(r1 * Math.sin(a), r1 * Math.cos(a)));
+            if (r1 < 2) {
+                filteredNotes.push(note);
+            }
+
+            ctx.stroke();
+        });
+        ctx.globalAlpha = 1;
+        return filteredNotes;
     }
 
     drawInnerCircle(t, height) {
         const ctx = this.ctx;
         ctx.fillStyle = 'white';
+        ctx.strokeStyle = 'white';
 
         const x = this.tick - Math.floor(this.tick);
-        const x4 = this.tick/4 - Math.floor(this.tick/4);
+        const x4 = this.tick / 4 - Math.floor(this.tick / 4);
 
         // create set of ripples, fading out over distance
 
         ctx.lineWidth *= .5;
         const count = 10;
-        for (let i=0; i<count; i++) {
-            const opacity = 1 - (i+x4)/count;
-            const radius = innerCircleRadius + Math.pow((i+x4)/count, .9) * 2;
+        for (let i = 0; i < count; i++) {
+            const opacity = 1 - (i + x4) / count;
+            const radius = innerCircleRadius + (((i + x4) / count) ** 0.9) * 2;
 
-            ctx.globalAlpha = .25 * opacity;
+            ctx.globalAlpha = .125 * opacity;
             ctx.beginPath();
-            ctx.arc(...t(0,0), radius * height / 2  - this.ctx.lineWidth, 0, Math.PI * 2);
+            ctx.arc(...t(0, 0), radius * height / 2 - this.ctx.lineWidth, 0, Math.PI * 2);
             ctx.stroke();
         }
         ctx.lineWidth *= 2;
@@ -132,7 +182,7 @@ export default class DittytoyVisualiser {
         const radius = lerp(smoothstep(0.5, 1, x) + smoothstep(0.5, 0, x), 1, 0.95) * innerCircleRadius;
 
         ctx.beginPath();
-        ctx.arc(...t(0,0), radius * height / 2  - this.ctx.lineWidth * 2, 0, Math.PI * 2);
+        ctx.arc(...t(0, 0), radius * height / 2 - this.ctx.lineWidth * 2, 0, Math.PI * 2);
         ctx.fill();
     }
 
@@ -140,19 +190,20 @@ export default class DittytoyVisualiser {
         this.freqAnalyser.getByteFrequencyData(this.freqData);
 
         const ctx = this.ctx;
-        ctx.strokeStyle = 'white';
 
-        ctx.beginPath();
 
         const ao = step(this.tick) * -0.1;
 
         for (let i = 8; i < this.freqData.length; i += 3) {
             const a = i * Math.PI * 2 / (this.freqData.length - 7) + ao;
             const r = innerCircleRadius + 0.2 * (Math.sqrt(this.freqData[i] / 255)) * this.volume;
+
+            ctx.strokeStyle = `hsl(${60 + (i * 240 / (this.freqData.length - 7))}, 75%, 75%)`;
+
+            ctx.beginPath();
             ctx.moveTo(...t(innerCircleRadius * Math.sin(a), innerCircleRadius * Math.cos(a)));
             ctx.lineTo(...t(Math.sin(a) * r, Math.cos(a) * r));
+            ctx.stroke();
         }
-
-        ctx.stroke();
     }
 }
