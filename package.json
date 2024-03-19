@@ -13,7 +13,7 @@
     "Signal Processing",
     "Generative Music",
     "Dittytoy",
-    "Sonic Pi",
+    "Sonic Pi"
   ],
   "repository": "git@github.com:reindernijhoff/dittytoy-package.git",
   "author": "Reinder Nijhoff <reinder@infi.nl>",
