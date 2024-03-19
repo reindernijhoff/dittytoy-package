@@ -62,7 +62,7 @@ dittytoy.resume(); // resume playing
 
 ### Events
 
-Dittytoy emits events you can listen to by subscribing to the `addEventListener` method.
+Dittytoy emits events you can listen to by subscribing to the `addListener` method.
 
 ```ts
 dittytoy.addListener(MSG_PLAY, () => {
