@@ -46,7 +46,7 @@ loop( () => {
 })
 ```
 
-Note: most browsers only allow audio to be played after a user interaction. You should use the `play` method to start the
+Note: Most browsers only allow audio after a user interacts with it. You should use the `play` method to start the
 audio after a user interaction.
 
 ### Controlling playback
@@ -62,10 +62,10 @@ dittytoy.resume(); // resume playing
 
 ### Events
 
-Dittytoy emits events that you can listen to by subscribing to the `addEventListener` method.
+Dittytoy emits events you can listen to by subscribing to the `addEventListener` method.
 
 ```ts
-dittytoy.addEventListener(MSG_PLAY, () => {
+dittytoy.addListener(MSG_PLAY, () => {
   console.log('Dittytoy starts playing');
 });
 ```
@@ -75,11 +75,11 @@ Some of the events you can listen to are:
 #### Logging
 
 ```ts
-dittytoy.addEventListener(MSG_LOG, (data: any) => {
+dittytoy.addListener(MSG_LOG, (data: any) => {
   console.log(data.message);
 });
 
-dittytoy.addEventListener(MSG_ERROR, (data: any) => {
+dittytoy.addListener(MSG_ERROR, (data: any) => {
   console.error(data.message);
 });
 ```
@@ -87,7 +87,7 @@ dittytoy.addEventListener(MSG_ERROR, (data: any) => {
 #### Initialization
 
 ```ts
-dittytoy.addEventListener(MSG_INIT, (data:any) => {
+dittytoy.addListener(MSG_INIT, (data:any) => {
   console.log('Dittytoy is initialized, ready to play');
   console.log('Structure of compiled ditty:', data.structure);
 });
@@ -97,7 +97,7 @@ dittytoy.addEventListener(MSG_INIT, (data:any) => {
 #### Playback
 
 ```ts
-dittytoy.addEventListener(MSG_NOTE_PLAYED, (data:any) => {
+dittytoy.addListener(MSG_NOTE_PLAYED, (data:any) => {
   console.log(`♪ tick: ${data.tick.toFixed(3)}, note: ${data.note} (${data.loop}.${data.synth})`);
 });
 dittytoy.addEventListener(MSG_UPDATE, (data:any) => {
@@ -112,16 +112,16 @@ dittytoy.addEventListener(MSG_UPDATE, (data:any) => {
 #### Flow
 
 ```ts
-dittytoy.addEventListener(MSG_PLAY, () => {
+dittytoy.addListener(MSG_PLAY, () => {
   console.log('play');
 });
-dittytoy.addEventListener(MSG_PAUSE, () => {
+dittytoy.addListener(MSG_PAUSE, () => {
   console.log('pause');
 });
-dittytoy.addEventListener(MSG_STOP, () => {
+dittytoy.addListener(MSG_STOP, () => {
   console.log('stop');
 });
-dittytoy.addEventListener(MSG_RESUME, () => {
+dittytoy.addListener(MSG_RESUME, () => {
   console.log('resume');
 });
 ```
