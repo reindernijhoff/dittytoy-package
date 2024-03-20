@@ -146,7 +146,7 @@ export default class DittytoyVisualiser {
             ctx.beginPath();
             ctx.moveTo(...t(r0 * Math.sin(a), r0 * Math.cos(a)));
             ctx.lineTo(...t(r1 * Math.sin(a), r1 * Math.cos(a)));
-            if (r1 < Math.max(1, aspectRatio)) {
+            if (r1 < Math.hypot(1, aspectRatio)) {
                 filteredNotes.push(note);
             }
 

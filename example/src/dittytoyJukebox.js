@@ -13,7 +13,10 @@ export default class DittytoyJukebox {
         this.paused = 2;
 
         this.fetchDitties();
-        this.fetchDitty('24373308b4');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const dittyId = urlParams.get('ditty') || '24373308b4';
+        this.fetchDitty(dittyId);
 
         $('play-button').addEventListener('click', async () => {
             if (this.paused === 0) {
