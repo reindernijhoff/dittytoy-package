@@ -14,8 +14,7 @@ export default class DittytoyJukebox {
 
         this.fetchDitties();
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const dittyId = urlParams.get('ditty') || '24373308b4';
+        const dittyId = window.location.hash?.slice(1) || '24373308b4';
         this.fetchDitty(dittyId);
 
         $('play-button').addEventListener('click', async () => {
@@ -68,6 +67,8 @@ export default class DittytoyJukebox {
         });
 
         await this.dittytoy.compile(this.ditty.code);
+
+        window.location.hash = `${id}`;
     }
 
     async pause() {
