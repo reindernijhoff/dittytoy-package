@@ -135,7 +135,7 @@ export default class DittytoyVisualiser {
         ctx.strokeStyle = loop.color;
 
         loop.notes.forEach(note => {
-            ctx.globalAlpha = 0.05 + note.volume;
+            ctx.globalAlpha = 0.25 + 0.75 * note.volume;
             const end = Math.max(0.0001, (this.tick - note.tick)) * speedModifier;
             const start = Math.max(0.0001, (this.tick - note.tick - note.duration / 2)) * speedModifier;
 
