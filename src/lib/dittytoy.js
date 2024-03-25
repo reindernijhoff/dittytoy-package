@@ -3,6 +3,15 @@
 import workerCode from './ditty-worker.js?raw';
 import workletCodeURL from './ditty-worklet.js?url';
 
+function getWorkerURL(releaseMode) {
+    const blob = new Blob([workerCode], {type: 'application/javascript'});
+    return URL.createObjectURL(blob);
+}
+
+function getAudioWorkletURL() {
+    return workletCodeURL;
+}
+
 export const LOOP_OPERATOR_SYNTH = 0;
 export const LOOP_OPERATOR_OPTION = 1;
 
@@ -32,6 +41,142 @@ export const MSG_STOP = 11;
 export const MSG_PAUSE = 12;
 export const MSG_RESUME = 13;
 
+
+/*! unmute-ios-audio. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+const USER_ACTIVATION_EVENTS = [
+    'auxclick',
+    'click',
+    'contextmenu',
+    'dblclick',
+    'keydown',
+    'keyup',
+    'mousedown',
+    'mouseup',
+    'touchend'
+]
+
+function unmuteIosAudio() {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    function isMobileSafari() {
+        return navigator.userAgent.match(/(iPod|iPhone|iPad)/) && navigator.userAgent.match(/AppleWebKit/);
+    }
+
+    if (!isMobileSafari()) return new Promise((resolve, reject) => reject());
+
+    // state can be 'blocked', 'pending', 'allowed'
+    let htmlAudioState = 'blocked';
+    let webAudioState = 'blocked';
+
+    let audio;
+    let context;
+    let source;
+
+    const sampleRate = (new AudioContext()).sampleRate;
+    const silentAudioFile = createSilentAudioFile(sampleRate);
+
+    // Return a seven samples long 8 bit mono WAVE file
+    function createSilentAudioFile(sampleRate) {
+        const arrayBuffer = new ArrayBuffer(10);
+        const dataView = new DataView(arrayBuffer);
+
+        dataView.setUint32(0, sampleRate, true);
+        dataView.setUint32(4, sampleRate, true);
+        dataView.setUint16(8, 1, true);
+
+        const missingCharacters =
+            window.btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
+                .slice(0, 13);
+
+        return `data:audio/wav;base64,UklGRisAAABXQVZFZm10IBAAAAABAAEA${missingCharacters}AgAZGF0YQcAAACAgICAgICAAAA=`;
+    }
+
+    function handleUserActivation(resolve, reject, e) {
+        if (webAudioState === 'blocked') {
+            webAudioState = 'pending'
+            createWebAudio();
+        }
+        if (htmlAudioState === 'blocked') {
+            htmlAudioState = 'pending'
+            Promise.all([createHtmlAudio(), context.resume()])
+                .then(() => resolve())
+                .catch(err = reject(err));
+        }
+    }
+
+    function createHtmlAudio() {
+        audio = document.createElement('audio');
+
+        audio.setAttribute('x-webkit-airplay', 'deny'); // Disable the iOS control center media widget
+        audio.preload = 'auto';
+        audio.loop = true;
+        audio.src = silentAudioFile;
+        audio.load();
+
+        return audio.play().then(
+            () => {
+                htmlAudioState = 'allowed';
+                maybeCleanup();
+            },
+            () => {
+                htmlAudioState = 'blocked';
+
+                audio.pause();
+                audio.removeAttribute('src');
+                audio.load();
+                audio = null;
+            }
+        )
+    }
+
+    function createWebAudio() {
+        context = new AudioContext();
+
+        source = context.createBufferSource();
+        source.buffer = context.createBuffer(1, 1, 22050); // .045 msec of silence
+        source.connect(context.destination);
+        source.start();
+
+        if (context.state === 'running') {
+            webAudioState = 'allowed';
+            maybeCleanup();
+            return true;
+        } else {
+            webAudioState = 'blocked';
+
+            source.disconnect(context.destination);
+            source = null;
+
+            context.close();
+            context = null;
+            return false;
+        }
+    }
+
+    function maybeCleanup() {
+        if (htmlAudioState !== 'allowed' || webAudioState !== 'allowed') return;
+
+        USER_ACTIVATION_EVENTS.forEach(eventName => {
+            window.removeEventListener(
+                eventName, handleUserActivation, {capture: true, passive: true}
+            );
+        });
+    }
+
+    return new Promise((resolve, reject) => {
+        USER_ACTIVATION_EVENTS.forEach(eventName => {
+            window.addEventListener(
+                eventName, handleUserActivation.bind(null, resolve, reject), {capture: true, passive: true}
+            );
+        });
+    });
+}
+
+unmuteIosAudio().then(() => {
+}).catch(() => {
+});
+
+
 class EventDispatcher {
     constructor() {
         this.events = {};
@@ -51,7 +196,8 @@ class EventDispatcher {
     }
 }
 
-export class Dittytoy extends EventDispatcher {
+
+class Dittytoy extends EventDispatcher {
     constructor() {
         super();
 
@@ -81,6 +227,14 @@ export class Dittytoy extends EventDispatcher {
     postMessageToVolumeWorkers(data, transfer = []) {
         this.postMessageToWorklet(data, transfer);
         this._volumeWorkers.forEach(worker => worker.postMessage(data, transfer));
+    }
+
+    setVolume(amp) {
+        this.postMessageToVolumeWorkers({type: MSG_SET_AMP, amp});
+    }
+
+    setInputParameters(vars) {
+        this.postMessageToWorkers({type: MSG_SET_VARS, vars});
     }
 
     log(message, line = -1) {
@@ -155,8 +309,7 @@ export class Dittytoy extends EventDispatcher {
             const workerData = {...data};
 
             // create a worker for each loop
-            const blob = new Blob( [ workerCode ], { type: "application/javascript" } );
-            const worker = new Worker(URL.createObjectURL(blob));
+            const worker = new Worker(getWorkerURL(releaseMode));
 
             worker.addEventListener('error', (e) => {
                 this.error(e.message, this.formatErrorCode(e));
@@ -223,6 +376,41 @@ export class Dittytoy extends EventDispatcher {
         };
     }
 
+    async encodeMP3(vars = {}, amp = {}, duration, onProgress, onComplete, fadeIn = 0, fadeOut = 0, bitRate = 320) {
+        await this.stop();
+        this.terminateWorkers();
+
+        this.log('[ENCODE MP3]');
+
+        this.postMessageToWorklet({type: MSG_RESET});
+
+        this.setupWorkers(this._structure, this._code, vars, amp);
+
+        const mp3Worker = await new Worker(`js/ditty-mp3-export.js`);
+
+        mp3Worker.onmessage = e => {
+            if (e.data.cmd === 'end') {
+                this.log("Done converting to mp3");
+                onComplete(new Blob(e.data.buf, {type: 'audio/mp3'}));
+
+                mp3Worker.terminate();
+
+                this.stop();
+                this.terminateWorkers();
+            }
+            if (e.data.cmd === 'progress') {
+                onProgress(e.data.progress);
+            }
+        }
+
+        const out = this._workerData.filter(workerData => workerData.out.nodeType === NODE_TYPE_OUT);
+        mp3Worker.postMessage({
+            type: MSG_INIT, in: out.map(w => ({name: w.name, nodeType: w.nodeType, port: w.channel.port2})
+            ), state: this._structure, vars: vars, amp: amp,
+            duration: duration, fadeIn: fadeIn, fadeOut: fadeOut, bitRate: bitRate
+        }, out.map(w => w.channel.port2));
+    }
+
     async compile(code) {
         await this.stop();
         this.terminateWorkers();
@@ -230,8 +418,7 @@ export class Dittytoy extends EventDispatcher {
         this.logClear().log('Analyze code...', 0);
 
         return new Promise((resolve, reject) => {
-            const blob = new Blob( [ workerCode ], { type: "application/javascript" } );
-            const worker = new Worker(URL.createObjectURL(blob));
+            const worker = new Worker(getWorkerURL(false));
 
             worker.addEventListener('error', (e) => { // error while compiling code
                 this.error(e.message, this.formatErrorCode(e));
@@ -280,7 +467,7 @@ export class Dittytoy extends EventDispatcher {
             this._source.buffer = this._context.createBuffer(2, sampleRate, sampleRate);
             this._source.loop = true;
 
-            await this._context.audioWorklet.addModule(workletCodeURL);
+            await this._context.audioWorklet.addModule(getAudioWorkletURL());
             this._worklet = new AudioWorkletNode(this._context, `ditty-worklet`, {
                 numberOfInputs: 1,
                 numberOfOutputs: 1,
