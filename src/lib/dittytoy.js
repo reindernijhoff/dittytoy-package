@@ -197,7 +197,7 @@ class EventDispatcher {
 }
 
 
-class Dittytoy extends EventDispatcher {
+export class Dittytoy extends EventDispatcher {
     constructor() {
         super();
 
