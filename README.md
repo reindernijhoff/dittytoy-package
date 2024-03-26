@@ -49,7 +49,7 @@ loop( () => {
 Note: Most browsers only allow audio after a user interacts with it. You should use the `play` method to start the
 audio after a user interaction.
 
-### Controlling playback
+## Controlling playback
 
 You can control the playback of the ditty using the following methods:
 
@@ -60,9 +60,31 @@ dittytoy.stop(); // stop playing
 dittytoy.resume(); // resume playing
 ```
 
-### Events
+### Change the volume
 
-Dittytoy emits events you can listen to by subscribing to the `addListener` method.
+You can change the volume of the ditty using the `setVolume` method.
+
+```ts
+dittytoy.setVolume({master: {amp: 0.5}}); // set the volume to 50%
+```
+
+It is also possible to set the volume of the separate loops using the same method.
+
+```ts
+dittytoy.setVolume({loops: [{name: loop1, amp: 0.5}, {name: loop2, amp: 0.75}]}); // set the volume of loop1 to 50% and loop2 to 75%
+```
+
+### Set Input Parameters
+
+Dittytoy allows you to set [https://dittytoy.net/syntax#input-parameters](input parameters) for the ditty using the `setInputParameters` method. For example, to set two parameters `threshold` and `gain` to -15 and 4 respectively, you can use the following code:
+
+```ts
+dittytoy.setInputParameters([{key: 'threshold', value: -15}, {key: 'gain', value: 4}]);
+```
+
+## Events
+
+Dittytoy emits events you can listen to by subscribing to the `addListener` method. For example, to listen to the `MSG_PLAY` event, you can use the following code:
 
 ```ts
 dittytoy.addListener(MSG_PLAY, () => {
@@ -70,9 +92,43 @@ dittytoy.addListener(MSG_PLAY, () => {
 });
 ```
 
-Some of the events you can listen to are:
+### Initialization
 
-#### Logging
+The `MSG_INIT` event is emitted each time when the ditty is compiled successfully and ready to play.
+
+```ts
+dittytoy.addListener(MSG_INIT, (data:any) => {
+  console.log('Dittytoy is initialized, ready to play');
+  console.log('Structure of compiled ditty:', data.structure);
+});
+```
+
+
+### Playback
+
+During playback, the `MSG_UPDATE` event is emitted each time the ditty is updated. This will be ~60 times per second.
+
+```ts
+dittytoy.addEventListener(MSG_UPDATE, (data:any) => {
+  // data.amp contains information about the volume of the ditty and the separate loops
+  const state = data.state;
+  if (state) {
+    console.log(`tick: ${(state.tick || 0).toFixed(3)}, time: ${(state.time || 0).toFixed(3)} (${state.bpm.toFixed(0)} bpm)`);
+  }
+});
+```
+
+Each time a note is played, the `MSG_NOTE_PLAYED` event is emitted.
+
+```ts
+dittytoy.addListener(MSG_NOTE_PLAYED, (data:any) => {
+  console.log(`♪ tick: ${data.tick.toFixed(3)}, note: ${data.note} (${data.loop}.${data.synth})`);
+});
+```
+
+### Logging
+
+Different types of messages are emitted using the `MSG_LOG` and `MSG_ERROR` events.
 
 ```ts
 dittytoy.addListener(MSG_LOG, (data: any) => {
@@ -84,32 +140,9 @@ dittytoy.addListener(MSG_ERROR, (data: any) => {
 });
 ```
 
-#### Initialization
+### Flow
 
-```ts
-dittytoy.addListener(MSG_INIT, (data:any) => {
-  console.log('Dittytoy is initialized, ready to play');
-  console.log('Structure of compiled ditty:', data.structure);
-});
-```
-
-
-#### Playback
-
-```ts
-dittytoy.addListener(MSG_NOTE_PLAYED, (data:any) => {
-  console.log(`♪ tick: ${data.tick.toFixed(3)}, note: ${data.note} (${data.loop}.${data.synth})`);
-});
-dittytoy.addEventListener(MSG_UPDATE, (data:any) => {
-  // data.amp contains information about the volume of the ditty and the separate loops
-  const state = data.state;
-  if (state) {
-    console.log(`tick: ${(state.tick || 0).toFixed(3)}, time: ${(state.time || 0).toFixed(3)} (${state.bpm.toFixed(0)} bpm)`);
-  }
-});
-```
-
-#### Flow
+Finally, the `MSG_PLAY`, `MSG_PAUSE`, `MSG_STOP`, and `MSG_RESUME` events are emitted when the ditty is played, paused, stopped, or resumed.
 
 ```ts
 dittytoy.addListener(MSG_PLAY, () => {

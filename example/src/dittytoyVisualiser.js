@@ -50,6 +50,7 @@ export default class DittytoyVisualiser {
             this.bpm = structure.bpm;
             this.sampleRate = structure.sampleRate;
             this.tick = 0;
+            this.targetTick = 0;
 
             const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
@@ -90,22 +91,24 @@ export default class DittytoyVisualiser {
                 }
             }
             if (data.state) {
-                this.tick = data.state.tick;
+                this.targetTick = data.state.tick;
             }
         });
 
         this.dittytoy.addListener(MSG_NOTE_PLAYED, data => {
             const loop = this.loops[data.loop];
-            const angle = loop.a + step(this.tick) * loop.rotSpeed * 0.1 + data.note / 64 * Math.PI * 2;
+            const angle = loop.a + step(this.tick) * loop.rotSpeed * 0.1 - data.note / 64 * Math.PI * 2;
             loop.notes.push({...data, volume: loop.volume ** 1.5, angle});
         });
     }
 
-    update() {
-        window.requestAnimationFrame(() => this.update());
+    update(time=0) {
+        window.requestAnimationFrame((time) => this.update(time));
         const canvas = this.canvas;
         const ctx = this.ctx;
         const {width, height} = canvas.getBoundingClientRect();
+
+        this.tick = lerp(this.tick, this.targetTick, 0.25);
 
         if (canvas.width !== width | 0 || canvas.height !== height | 0) {
             canvas.width = width | 0;
