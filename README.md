@@ -65,18 +65,20 @@ dittytoy.resume(); // resume playing
 You can change the volume of the ditty using the `setVolume` method.
 
 ```ts
-dittytoy.setVolume({master: {amp: 0.5}}); // set the volume to 50%
+// set the volume to 50%
+dittytoy.setVolume({master: {amp: 0.5}}); 
 ```
 
-It is also possible to set the volume of the separate loops using the same method.
+It is also possible to set the volume of two separate loops using the same method.
 
 ```ts
-dittytoy.setVolume({loops: [{name: loop1, amp: 0.5}, {name: loop2, amp: 0.75}]}); // set the volume of loop1 to 50% and loop2 to 75%
+// set the volume of loop1 to 50% and loop2 to 75%
+dittytoy.setVolume({loops: [{name: loop1, amp: 0.5}, {name: loop2, amp: 0.75}]});
 ```
 
 ### Set Input Parameters
 
-Dittytoy allows you to set [https://dittytoy.net/syntax#input-parameters](input parameters) for the ditty using the `setInputParameters` method. For example, to set two parameters `threshold` and `gain` to -15 and 4 respectively, you can use the following code:
+Dittytoy allows you to set [input parameters](https://dittytoy.net/syntax#input-parameters) for the ditty using the `setInputParameters` method. For example, to set two parameters, `threshold` and `gain`, to -15 and 4, respectively, you can use the following code:
 
 ```ts
 dittytoy.setInputParameters([{key: 'threshold', value: -15}, {key: 'gain', value: 4}]);
@@ -94,7 +96,7 @@ dittytoy.addListener(MSG_PLAY, () => {
 
 ### Initialization
 
-The `MSG_INIT` event is emitted each time when the ditty is compiled successfully and ready to play.
+The `MSG_INIT` event is emitted when the ditty is compiled successfully and ready to play.
 
 ```ts
 dittytoy.addListener(MSG_INIT, (data:any) => {
@@ -128,7 +130,7 @@ dittytoy.addListener(MSG_NOTE_PLAYED, (data:any) => {
 
 ### Logging
 
-Different types of messages are emitted using the `MSG_LOG` and `MSG_ERROR` events.
+Different messages are emitted using the `MSG_LOG` and `MSG_ERROR` events.
 
 ```ts
 dittytoy.addListener(MSG_LOG, (data: any) => {
