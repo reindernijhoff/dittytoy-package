@@ -100,7 +100,7 @@ function unmuteIosAudio() {
             htmlAudioState = 'pending'
             Promise.all([createHtmlAudio(), context.resume()])
                 .then(() => resolve())
-                .catch(err = reject(err));
+                .catch(err => reject(err));
         }
     }
 
