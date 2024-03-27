@@ -20,12 +20,11 @@ export default class DittytoyJukebox {
     constructor() {
         this.dittytoy = new Dittytoy();
         initDittytoyMediaSession(this.dittytoy, () => this.prev(), () => this.next());
-        this.visualiser = new DittytoyVisualiser(this.dittytoy);
-
-        this.ditty = null;
-        this.index = 0;
+        new DittytoyVisualiser(this.dittytoy);
 
         this.ditties = [];
+        this.ditty = null;
+        this.index = 0;
 
         this.fetchDitties().then(async () => {
             const dittyId = window.location.hash?.slice(1) || '24373308b4';
@@ -87,7 +86,6 @@ export default class DittytoyJukebox {
 
     async fetchDitty(id) {
         await this.dittytoy.stop();
-        this.paused = 2;
         this.updateUI();
 
         this.ditty = await fetch(`https://dittytoy.net/api/v1/ditty/${id}/`).then(e => e.json()).then(ditty => {
