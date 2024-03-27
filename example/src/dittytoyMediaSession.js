@@ -90,10 +90,14 @@ export function initDittytoyMediaSession(dittytoy, prev = null, next = null) {
 }
 
 export function setMediaSessionMetadata({title, artist, album, artwork}) {
+    try {
     navigator.mediaSession.metadata = new MediaMetadata({
         title,
         artist,
         album,
         artwork: artwork.map(({src, sizes, type}) => ({src, sizes, type})),
     });
+    } catch (error) {
+        console.log(`The media session metadata is not supported yet.`);
+    }
 }
