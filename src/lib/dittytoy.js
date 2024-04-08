@@ -279,7 +279,7 @@ export class Dittytoy extends EventDispatcher {
         }
     }
 
-    async resume(vars, amp, releaseMode = false) {
+    async resume(vars = [], amp = {}, releaseMode = false) {
         if (this.stopped) {
             await this.play(vars, amp, releaseMode);
         } else if (this.paused) {
@@ -374,41 +374,6 @@ export class Dittytoy extends EventDispatcher {
                     }, e.e).filter(Boolean).join("\n")
             })
         };
-    }
-
-    async encodeMP3(vars = {}, amp = {}, duration, onProgress, onComplete, fadeIn = 0, fadeOut = 0, bitRate = 320) {
-        await this.stop();
-        this.terminateWorkers();
-
-        this.log('[ENCODE MP3]');
-
-        this.postMessageToWorklet({type: MSG_RESET});
-
-        this.setupWorkers(this._structure, this._code, vars, amp);
-
-        const mp3Worker = await new Worker(`js/ditty-mp3-export.js`);
-
-        mp3Worker.onmessage = e => {
-            if (e.data.cmd === 'end') {
-                this.log("Done converting to mp3");
-                onComplete(new Blob(e.data.buf, {type: 'audio/mp3'}));
-
-                mp3Worker.terminate();
-
-                this.stop();
-                this.terminateWorkers();
-            }
-            if (e.data.cmd === 'progress') {
-                onProgress(e.data.progress);
-            }
-        }
-
-        const out = this._workerData.filter(workerData => workerData.out.nodeType === NODE_TYPE_OUT);
-        mp3Worker.postMessage({
-            type: MSG_INIT, in: out.map(w => ({name: w.name, nodeType: w.nodeType, port: w.channel.port2})
-            ), state: this._structure, vars: vars, amp: amp,
-            duration: duration, fadeIn: fadeIn, fadeOut: fadeOut, bitRate: bitRate
-        }, out.map(w => w.channel.port2));
     }
 
     async compile(code) {
