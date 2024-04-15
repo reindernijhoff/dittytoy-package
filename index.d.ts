@@ -38,31 +38,81 @@ export type InputParameterType = {
   value: number;
 }
 
+/**
+ * The Dittytoy class represents a Dittytoy synthesizer.
+ */
 export class Dittytoy {
+  /**
+   * Indicates whether the synthesizer is paused.
+   */
   paused: boolean;
+
+  /**
+   * Indicates whether the synthesizer is stopped.
+   */
   stopped: boolean;
 
+  /**
+   * Adds a listener for a specific event.
+   * @param event - The event to listen for.
+   * @param callback - The function to call when the event occurs.
+   */
   addListener(event: any, callback: any): void;
 
+  /**
+   * Removes a listener for a specific event.
+   * @param event - The event to stop listening for.
+   * @param callback - The function to remove from the event's listeners.
+   */
   removeListener(event: any, callback: any): void;
 
+  /**
+   * Sets the volume for the synthesizer.
+   * @param volume - The volume settings to apply.
+   */
   setVolume(volume: VolumeType): void;
 
+  /**
+   * Sets the input parameters for the synthesizer.
+   * @param inputParameters - The input parameters to set.
+   */
   setInputParameters(inputParameters: InputParameterType[]): void;
 
-  log(message: any, line?: number): this;
-
-  error(message: any, e: any): this;
-
+  /**
+   * Compiles the provided code.
+   * @param code - The code to compile.
+   * @returns A promise that resolves when the code has been compiled.
+   */
   compile(code: string): Promise<any>;
 
+  /**
+   * Stops the synthesizer.
+   * @returns A promise that resolves when the synthesizer has been stopped.
+   */
   stop(): Promise<void>;
 
+  /**
+   * Pauses the synthesizer.
+   * @returns A promise that resolves when the synthesizer has been paused.
+   */
   pause(): Promise<void>;
 
+  /**
+   * Resumes the synthesizer.
+   * @param inputParameters - The input parameters to set (optional).
+   * @param volume - The volume settings to apply (optional).
+   * @param releaseMode - Whether to enable release mode (optional).
+   * @returns A promise that resolves when the synthesizer has been resumed.
+   */
   resume(inputParameters?: InputParameterType[], volume?: VolumeType, releaseMode?: boolean): Promise<void>;
 
+  /**
+   * Starts playing the synthesizer.
+   * @param inputParameters - The input parameters to set (optional).
+   * @param volume - The volume settings to apply (optional).
+   * @param releaseMode - Whether to enable release mode (optional).
+   * @returns A promise that resolves when the synthesizer has started playing.
+   */
   play(inputParameters?: InputParameterType[], volume?: VolumeType, releaseMode?: boolean): Promise<void>;
 }
-
 export {};
