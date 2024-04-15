@@ -51,8 +51,7 @@
     "shx": "^0.3.4",
     "tsx": "^4.7.1",
     "typescript": "^5.4.2",
-    "vite": "^5.1.6",
-    "vite-plugin-dts": "^3.8.1"
+    "vite": "^5.1.6"
   },
   "engines": {
     "node": ">=20.0.0"
