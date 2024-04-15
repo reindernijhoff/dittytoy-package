@@ -28,10 +28,12 @@
   ],
   "main": "./dist/dittytoy.umd.cjs",
   "module": "./dist/dittytoy.js",
+  "types": "./index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/dittytoy.js",
-      "require": "./dist/dittytoy.umd.cjs"
+      "require": "./dist/dittytoy.umd.cjs",
+      "types": "./index.d.ts"
     }
   },
   "publishConfig": {
