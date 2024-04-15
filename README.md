@@ -9,7 +9,7 @@ full [Dittytoy API Reference here](https://dittytoy.net/syntax).
 
 ### Installing
 
-Add `dittytoy` to your project:
+Add [dittytoy](https://www.npmjs.com/package/dittytoy) to your project:
 
 ```sh
 npm i dittytoy
