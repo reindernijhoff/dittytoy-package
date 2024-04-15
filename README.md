@@ -111,7 +111,7 @@ dittytoy.addListener(MSG_INIT, (data:any) => {
 During playback, the `MSG_UPDATE` event is emitted each time the ditty is updated. This will be ~60 times per second.
 
 ```ts
-dittytoy.addEventListener(MSG_UPDATE, (data:any) => {
+dittytoy.addListener(MSG_UPDATE, (data:any) => {
   // data.amp contains information about the volume of the ditty and the separate loops
   const state = data.state;
   if (state) {
