@@ -7,7 +7,7 @@ full [Dittytoy API Reference here](https://dittytoy.net/syntax).
 
 ## Demo
 
-- [Canvas Audio Visualisation](https://reindernijhoff.github.io/dittytoy-package/). This example is in the repository's example/ directory.
+- [Canvas Audio Visualisation](https://reindernijhoff.github.io/dittytoy-package/). A build from the repository's example/ directory.
 
 ## Getting started
 
