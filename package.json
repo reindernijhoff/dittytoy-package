@@ -1,19 +1,22 @@
 {
   "name": "dittytoy",
-  "version": "0.1.8",
+  "version": "1.0.5",
   "description": "",
   "keywords": [
     "Web Audio",
     "Web Audio API",
     "Synthesis",
+    "Audio Synthesis",
+    "Algorithmic Composition",
+    "Algorave",
     "Playback",
-    "Instrument",
     "Music",
     "DSP",
     "Signal Processing",
     "Generative Music",
     "Dittytoy",
-    "Sonic Pi"
+    "Sonic Pi",
+    "Supercollider"
   ],
   "repository": "git@github.com:reindernijhoff/dittytoy-package.git",
   "author": "Reinder Nijhoff <reinder@infi.nl>",
@@ -25,10 +28,12 @@
   ],
   "main": "./dist/dittytoy.umd.cjs",
   "module": "./dist/dittytoy.js",
+  "types": "./index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/dittytoy.js",
-      "require": "./dist/dittytoy.umd.cjs"
+      "require": "./dist/dittytoy.umd.cjs",
+      "types": "./index.d.ts"
     }
   },
   "publishConfig": {
