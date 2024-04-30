@@ -9,7 +9,7 @@ full [Dittytoy API Reference here](https://dittytoy.net/syntax).
 
 - [Canvas Audio Visualisation](https://reindernijhoff.github.io/dittytoy-package/).
 
-This is a build from the repository's example/ directory. Press the play button on the top left of your screen to start playback.
+This is a build from the repository's example/ directory. To start playback, press the play button at the top left of your screen.
 
 ## Getting started
 
