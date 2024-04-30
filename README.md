@@ -5,6 +5,10 @@ Compile and play code (ditties) from [Dittytoy.net](https://dittytoy.net), an on
 The API syntax of Dittytoy is loosely based on the syntax of [Sonic Pi](https://sonic-pi.net/tutorial.html). You can find the
 full [Dittytoy API Reference here](https://dittytoy.net/syntax).
 
+## Demo
+
+- [Canvas Audio Visualisation](https://reindernijhoff.github.io/dittytoy-package/). This example is in the repository's example/ directory.
+
 ## Getting started
 
 ### Installing
