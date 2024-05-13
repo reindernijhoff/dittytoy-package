@@ -1,6 +1,6 @@
 # Dittytoy
 
-Compile and play code (ditties) from [Dittytoy.net](https://dittytoy.net), an online platform that allows you to create generative music using a minimalistic javascript API.
+Compile and play code (ditties) from [Dittytoy.net](https://dittytoy.net), an online platform that allows you to create generative music using a minimalistic javascript API. Zero dependencies.
 
 The API syntax of Dittytoy is loosely based on the syntax of [Sonic Pi](https://sonic-pi.net/tutorial.html). You can find the
 full [Dittytoy API Reference here](https://dittytoy.net/syntax).
