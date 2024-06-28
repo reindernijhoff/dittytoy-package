@@ -8,7 +8,7 @@ import {
     MSG_STOP,
     MSG_UPDATE,
     RUN_AS_WORKER
-} from 'dittytoy';
+} from '../../src';
 import DittytoyVisualiser from "./dittytoyVisualiser.js";
 import {initDittytoyMediaSession, setMediaSessionMetadata} from "./dittytoyMediaSession.js";
 

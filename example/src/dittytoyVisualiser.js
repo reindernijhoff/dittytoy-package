@@ -1,4 +1,4 @@
-import {MSG_INIT, MSG_NOTE_PLAYED, MSG_UPDATE, MSG_WORKLET_READY} from 'dittytoy';
+import {MSG_INIT, MSG_NOTE_PLAYED, MSG_UPDATE, MSG_WORKLET_READY} from '../../src';
 
 const innerCircleRadius = 0.15;
 

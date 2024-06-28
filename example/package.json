@@ -15,6 +15,6 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "dittytoy": "0.1.6"
+    "dittytoy": "latest"
   }
 }

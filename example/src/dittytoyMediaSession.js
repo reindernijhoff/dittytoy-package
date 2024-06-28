@@ -1,4 +1,4 @@
-import {MSG_PAUSE, MSG_PLAY, MSG_RESUME, MSG_STOP} from 'dittytoy';
+import {MSG_PAUSE, MSG_PLAY, MSG_RESUME, MSG_STOP} from '../../src';
 
 function createSilentAudioFile(sampleRate) {
     const arrayBuffer = new ArrayBuffer(10);
