@@ -24,15 +24,19 @@ on:
 jobs:
   bump-version:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
 
     steps:
       - name: Check out source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
 
       - name: Install npm packages
@@ -57,10 +61,7 @@ jobs:
         run: |
           npm run prepare-publish
           cd ./dist
-          npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
           npm publish
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push latest version
         run: git push origin main --follow-tags
