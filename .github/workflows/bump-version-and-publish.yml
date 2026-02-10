@@ -65,19 +65,21 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Prepare publish
+        run: npm run prepare-publish
+
+      - name: Copy npmrc to dist
+        run: cp .npmrc ./dist/.npmrc
+
       - name: Publish to NPM (Release)
         if: github.event_name == 'workflow_dispatch'
-        run: |
-          npm run prepare-publish
-          cd ./dist
-          npm publish
+        run: npm publish
+        working-directory: ./dist
 
       - name: Publish to NPM (Dev)
         if: github.event_name == 'push'
-        run: |
-          npm run prepare-publish
-          cd ./dist
-          npm publish --tag next
+        run: npm publish --tag next
+        working-directory: ./dist
 
       - name: Push latest version
         if: github.event_name == 'workflow_dispatch'
