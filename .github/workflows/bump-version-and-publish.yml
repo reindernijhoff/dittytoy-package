@@ -1,6 +1,8 @@
-name: Bump version, Tag & Publish
+name: Build & Publish
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       version:
@@ -22,7 +24,7 @@ on:
           - rc
 
 jobs:
-  bump-version:
+  publish:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -47,21 +49,36 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
 
-      - name: Bump Version
+      - name: Bump Version (Release)
+        if: github.event_name == 'workflow_dispatch'
         run: |
           npm version ${{ github.event.inputs.version }} --no-git-tag-version --preid ${{ github.event.inputs.prereleaseId }}
           git add .
           git commit -m "v$(npm pkg get version | tr -d '"')" --no-verify
           git tag $(npm pkg get version | tr -d '"') -m "v$(npm pkg get version | tr -d '"')"
 
-      - name: Build & Publish
+      - name: Bump Version (Dev)
+        if: github.event_name == 'push'
+        run: |
+          echo "$(npm pkg get version | cut -d '"' -f 2 | cut -d '-' -f 1)-dev.$(git rev-parse --short HEAD)" | xargs npm version --no-git-tag-version
+
+      - name: Build
         run: npm run build
 
-      - name: Publish to NPM
+      - name: Publish to NPM (Release)
+        if: github.event_name == 'workflow_dispatch'
         run: |
           npm run prepare-publish
           cd ./dist
           npm publish
 
+      - name: Publish to NPM (Dev)
+        if: github.event_name == 'push'
+        run: |
+          npm run prepare-publish
+          cd ./dist
+          npm publish --tag next
+
       - name: Push latest version
+        if: github.event_name == 'workflow_dispatch'
         run: git push origin main --follow-tags
