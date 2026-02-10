@@ -68,9 +68,6 @@ jobs:
       - name: Prepare publish
         run: npm run prepare-publish
 
-      - name: Copy npmrc to dist
-        run: cp .npmrc ./dist/.npmrc
-
       - name: Publish to NPM (Release)
         if: github.event_name == 'workflow_dispatch'
         run: npm publish
